@@ -29,6 +29,12 @@ test('logout', async () => {
     expect(logoutRes.status).toBe(200);
 });
 
+test('register without all needed info', async () => {
+    const newUser = { name: 'pizza please', email: null, password: 'b' };
+    const registerRes = await request(app).post('/api/auth').send(newUser);
+    expect(registerRes.body).toEqual({ message: 'name, email, and password are required' });
+});
+
 function expectValidJwt(potentialJwt) {
   expect(potentialJwt).toMatch(/^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/);
 }

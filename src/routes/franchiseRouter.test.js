@@ -69,3 +69,13 @@ test('create franchise store', async () => {
     const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminAuthToken}`).send(store);
     expect(createStore.status).toBe(200);
 });
+
+test('delete a store', async () => {
+    const franchiseRes = await createFranchise();
+    franchiseId = franchiseRes.body.id;
+    const store = { name: randomName() };
+    const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminAuthToken}`).send(store);
+    let storeId = createStore.body.id;
+    const deleteStore = await request(app).delete(`/api/franchise/${franchiseId}/store/${storeId}`).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteStore.status).toBe(200);
+});

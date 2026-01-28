@@ -43,6 +43,8 @@ beforeAll(async () => {
 test('get franchises', async () => {
     const franchiseList = await request(app).get('/api/franchise?page=0&limit=10&name=*');
     expect(franchiseList.status).toBe(200);
+    expect(Array.isArray(franchiseList.body.franchises)).toBe(true);
+    expect(franchiseList.body.franchises.length).toBeGreaterThan(0);
 });
 
 test('get user franchises', async () => {

@@ -19,6 +19,18 @@ async function createAdminUser() {
     return { ...user, password: 'toomanysecrets' };
 }
 
+async function createFranchise() {
+    const franchiseRes = await request(app)
+        .post('/api/franchise')
+        .set('Authorization', `Bearer ${adminAuthToken}`)
+        .send({
+            name: randomName(),
+            admins: [{ email: admin.email }],
+        });
+    franchiseId = franchiseRes.body.id;
+    return franchiseRes;
+}
+
 beforeAll(async () => {
     // make email unique per test run
     const testAdmin = createAdminUser();
@@ -29,14 +41,7 @@ beforeAll(async () => {
     adminAuthToken = loginRes.body.token;
 
     // create a franchise to use in tests
-    const franchiseRes = await request(app)
-        .post('/api/franchise')
-        .set('Authorization', `Bearer ${adminAuthToken}`)
-        .send({
-            name: randomName(),
-            admins: [{ email: admin.email }],
-        });
-    franchiseId = franchiseRes.body.id;
+    const franchiseRes = await createFranchise();
     expect(franchiseRes.status).toBe(200);
 });
 
@@ -58,13 +63,7 @@ test('delete franchise', async () => {
 });
 
 test('create franchise store', async () => {
-    const franchiseRes = await request(app)
-        .post('/api/franchise')
-        .set('Authorization', `Bearer ${adminAuthToken}`)
-        .send({
-            name: randomName(),
-            admins: [{ email: admin.email }],
-        });
+    const franchiseRes = await createFranchise();
     franchiseId = franchiseRes.body.id;
     const store = { name: randomName() };
     const createStore = await request(app).post(`/api/franchise/${franchiseId}/store`).set('Authorization', `Bearer ${adminAuthToken}`).send(store);

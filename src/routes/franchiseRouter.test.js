@@ -1,10 +1,8 @@
 const request = require('supertest');
 const app = require('../service');
 
-// const regularUser = { name: 'pizza please', email: 'email@test.com', password: 'b' };
-
 let adminAuthToken;
-
+let admin;
 const { Role, DB } = require('../database/database.js');
 
 function randomName() {
@@ -23,7 +21,7 @@ async function createAdminUser() {
 beforeAll(async () => {
     // make email unique per test run
     const testAdmin = createAdminUser();
-    const admin = await testAdmin
+    admin = await testAdmin
 
     // login admin user
     const loginRes = await request(app).put('/api/auth').send(admin);
@@ -37,12 +35,15 @@ beforeAll(async () => {
             name: randomName(),
             admins: [{ email: admin.email }],
         });
-    // expect(franchiseRes.status).toBe(200);
-    console.log(franchiseRes.body);
+    expect(franchiseRes.status).toBe(200);
 });
 
 test('get franchises', async () => {
-  const franchiseList = await request(app).get('/api/franchise?page=0&limit=10&name=*');
-  expect(franchiseList.status).toBe(200);
-  console.log(franchiseList.body.id);
+    const franchiseList = await request(app).get('/api/franchise?page=0&limit=10&name=*');
+    expect(franchiseList.status).toBe(200);
+});
+
+test('get user franchises', async () => {
+    const franchiseList = await request(app).get(`/api/franchise/${admin.id}`).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(franchiseList.status).toBe(200);
 });

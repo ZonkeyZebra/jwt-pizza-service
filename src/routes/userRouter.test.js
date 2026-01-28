@@ -3,6 +3,8 @@ const app = require('../service');
 
 let adminAuthToken;
 let admin;
+const testUser = { name: 'pizza diner user', email: 'reg@test.com', password: 'a' };
+let testUserId;
 const { Role, DB } = require('../database/database.js');
 
 function randomName() {
@@ -23,6 +25,9 @@ beforeAll(async () => {
     const testAdmin = createAdminUser();
     admin = await testAdmin
 
+    const registerRes = await request(app).post('/api/auth').send(testUser);
+    testUserId = registerRes.body.user.id;
+
     // login admin user
     const loginRes = await request(app).put('/api/auth').send(admin);
     adminAuthToken = loginRes.body.token;
@@ -31,4 +36,15 @@ beforeAll(async () => {
 test('get user', async () => {
     const getUser = await request(app).get('/api/user/me').set('Authorization', `Bearer ${adminAuthToken}`);
     expect(getUser.status).toBe(200);
+});
+
+test('get users', async () => {
+    const getUsers = await request(app).get('/api/user').set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(getUsers.status).toBe(200);
+});
+
+test('update a user', async () => {
+    const updatedInfo = {name: 'updated', email: 'updated@test.com'}
+    const updatedUser = await request(app).put(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`).send(updatedInfo);
+    expect(updatedUser.status).toBe(200);
 });

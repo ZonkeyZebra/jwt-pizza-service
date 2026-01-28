@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('../service');
 
-// let adminAuthToken;
+let adminAuthToken;
 let admin;
 const { Role, DB } = require('../database/database.js');
 
@@ -25,12 +25,17 @@ beforeAll(async () => {
 
     // login admin user
     const loginRes = await request(app).put('/api/auth').send(admin);
-    console.log(loginRes.body);
-    // adminAuthToken = loginRes.body.token;
+    adminAuthToken = loginRes.body.token;
 });
 
 test('get menu', async () => {
     const menu = await request(app).get('/api/order/menu');
     expect(menu.status).toBe(200);
     expect(Array.isArray(menu.body)).toBe(true);
+});
+
+test('add menu item', async () => {
+    const newItem = { title: randomName(), description: randomName(), image: 'pizza9.png', price: 0.0001 };
+    const menuItem = await request(app).put('/api/order/menu').set('Authorization', `Bearer ${adminAuthToken}`).send(newItem);
+    expect(menuItem.status).toBe(200);
 });

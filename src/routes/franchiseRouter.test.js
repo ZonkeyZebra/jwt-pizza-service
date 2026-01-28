@@ -3,6 +3,7 @@ const app = require('../service');
 
 let adminAuthToken;
 let admin;
+let franchiseId;
 const { Role, DB } = require('../database/database.js');
 
 function randomName() {
@@ -35,6 +36,7 @@ beforeAll(async () => {
             name: randomName(),
             admins: [{ email: admin.email }],
         });
+    franchiseId = franchiseRes.body.id;
     expect(franchiseRes.status).toBe(200);
 });
 
@@ -46,4 +48,9 @@ test('get franchises', async () => {
 test('get user franchises', async () => {
     const franchiseList = await request(app).get(`/api/franchise/${admin.id}`).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(franchiseList.status).toBe(200);
+});
+
+test('delete franchise', async () => {
+    const deleteFranchiseRes = await request(app).delete(`/api/franchise/${franchiseId}`).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteFranchiseRes.status).toBe(200);
 });

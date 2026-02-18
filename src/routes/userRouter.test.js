@@ -44,7 +44,12 @@ test('get users', async () => {
 });
 
 test('update a user', async () => {
-    const updatedInfo = {name: 'updated', email: 'updated@test.com'}
+    const updatedInfo = { name: 'updated', email: 'updated@test.com' }
     const updatedUser = await request(app).put(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`).send(updatedInfo);
     expect(updatedUser.status).toBe(200);
+});
+
+test('list users', async () => {
+    const listUsersRes = await request(app).get('/api/user');
+    expect(listUsersRes.status).toBe(200);
 });

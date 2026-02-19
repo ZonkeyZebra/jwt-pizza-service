@@ -75,14 +75,14 @@ class DB {
     }
   }
 
-  async deleteUser() {
+  async deleteUser(userID) {
     const connection = await this.getConnection();
     try {
-      // await this.query(connection, `DELETE FROM user WHERE id=?`, [userID]);
-      console.log('delete user not implemented');
+      await this.query(connection, `DELETE FROM userrole WHERE userId=?`, [userID]);
+      await this.query(connection, `DELETE FROM user WHERE id=?`, [userID]);
     } catch {
       await connection.rollback();
-      throw new StatusCodeError('unable to delete franchise', 500);
+      throw new StatusCodeError('unable to delete user', 500);
     } finally {
       connection.end();
     }

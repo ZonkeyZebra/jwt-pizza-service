@@ -102,7 +102,10 @@ class DB {
         users = users.slice(0, limit);
       }
 
-      let userRoles = await this.query(connection, `SELECT * FROM userrole WHERE userId IN (${users.map((u) => u.id).join(',')})`);
+      let userRoles = [];
+      if (users.length > 0) {
+        userRoles = await this.query(connection, `SELECT * FROM userrole WHERE userId IN (${users.map((u) => u.id).join(',')})`);
+      }
 
       // Combine roles into users
       users = users.map((u) => {

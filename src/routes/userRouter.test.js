@@ -64,6 +64,11 @@ test('list users', async () => {
     expect(listUsersRes.body.users.length).toBe(10);
 });
 
+test('delete user', async () => {
+    const deleteRes = await request(app).delete(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`);
+    expect(deleteRes.status).toBe(200);
+});
+
 async function registerUser(service) {
     const testUser = {
         name: 'pizza diner',

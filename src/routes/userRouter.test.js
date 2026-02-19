@@ -55,12 +55,13 @@ test('list users unauthorized', async () => {
 });
 
 test('list users', async () => {
-    const [user, userToken] = await registerUser(request(app));
+    const [user, adminAuthToken] = await registerUser(request(app));
     expect(user).toBeDefined();
     const listUsersRes = await request(app)
         .get('/api/user')
-        .set('Authorization', 'Bearer ' + userToken);
+        .set('Authorization', 'Bearer ' + adminAuthToken);
     expect(listUsersRes.status).toBe(200);
+    expect(listUsersRes.body.users.length).toBe(10);
 });
 
 async function registerUser(service) {

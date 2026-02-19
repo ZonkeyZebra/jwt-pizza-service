@@ -22,8 +22,7 @@ async function createAdminUser() {
 
 beforeAll(async () => {
     // make email unique per test run
-    const testAdmin = createAdminUser();
-    admin = await testAdmin
+    admin = await createAdminUser();
 
     const registerRes = await request(app).post('/api/auth').send(testUser);
     testUserId = registerRes.body.user.id;

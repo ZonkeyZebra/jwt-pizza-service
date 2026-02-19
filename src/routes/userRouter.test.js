@@ -80,6 +80,7 @@ test('list users', async () => {
         .get('/api/user')
         .set('Authorization', `Bearer ${adminAuthToken}`);
 
+    console.log(listUsersRes.body);
     expect(listUsersRes.status).toBe(200);
     expect(listUsersRes.body.users).toBeDefined();
 });
@@ -97,5 +98,6 @@ test('delete user', async () => {
         .delete(`/api/user/${testUserId}`)
         .set('Authorization', `Bearer ${adminAuthToken}`);
 
+    console.log(deleteRes.body);
     expect(deleteRes.status).toBe(200);
 });

@@ -75,6 +75,39 @@ class DB {
     }
   }
 
+  async deleteUser() {
+    const connection = await this.getConnection();
+    try {
+      // await this.query(connection, `DELETE FROM user WHERE id=?`, [userID]);
+      console.log('delete user not implemented');
+    } catch {
+      await connection.rollback();
+      throw new StatusCodeError('unable to delete franchise', 500);
+    } finally {
+      connection.end();
+    }
+  }
+
+  async getUsers(authUser, page = 0, limit = 10, nameFilter = '*') {
+    const connection = await this.getConnection();
+
+    const offset = page * limit;
+    nameFilter = nameFilter.replace(/\*/g, '%');
+
+    try {
+      let users = await this.query(connection, `SELECT id, name FROM user WHERE name LIKE ? LIMIT ${limit + 1} OFFSET ${offset}`, [nameFilter]);
+
+      const more = users.length > limit;
+      if (more) {
+        users = users.slice(0, limit);
+      }
+
+      return [users, more];
+    } finally {
+      connection.end();
+    }
+  }
+
   async updateUser(userId, name, email, password) {
     const connection = await this.getConnection();
     try {

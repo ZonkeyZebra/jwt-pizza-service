@@ -95,12 +95,22 @@ class DB {
     nameFilter = nameFilter.replace(/\*/g, '%');
 
     try {
-      let users = await this.query(connection, `SELECT id, name FROM user WHERE name LIKE ? LIMIT ${limit + 1} OFFSET ${offset}`, [nameFilter]);
+      let users = await this.query(connection, `SELECT * FROM user WHERE name LIKE ? LIMIT ${limit + 1} OFFSET ${offset}`, [nameFilter]);
 
       const more = users.length > limit;
       if (more) {
         users = users.slice(0, limit);
       }
+
+      let userRoles = await this.query(connection, `SELECT * FROM userrole WHERE userId IN (${users.map((u) => u.id).join(',')})`);
+
+      // Combine roles into users
+      users = users.map((u) => {
+        const roles = userRoles
+          .filter((r) => r.userId === u.id)
+          .map((r) => ({ objectId: r.objectId || undefined, role: r.role }));
+        return { ...u, roles };
+      });
 
       return [users, more];
     } finally {

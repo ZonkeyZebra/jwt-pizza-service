@@ -78,8 +78,10 @@ class DB {
   async deleteUser(userID) {
     const connection = await this.getConnection();
     try {
+      await connection.beginTransaction();
       await this.query(connection, `DELETE FROM userrole WHERE userId=?`, [userID]);
       await this.query(connection, `DELETE FROM user WHERE id=?`, [userID]);
+      await connection.commit();
     } catch {
       await connection.rollback();
       throw new StatusCodeError('unable to delete user', 500);
@@ -392,7 +394,7 @@ class DB {
 
         if (!dbExists) {
           const defaultAdmin = { name: '常用名字', email: 'a@jwt.com', password: 'admin', roles: [{ role: Role.Admin }] };
-          this.addUser(defaultAdmin);
+          await this.addUser(defaultAdmin);
         }
       } finally {
         connection.end();

@@ -79,7 +79,7 @@ class DB {
     const connection = await this.getConnection();
     try {
       await connection.beginTransaction();
-      await this.query(connection, `DELETE FROM userrole WHERE userId=?`, [userID]);
+      await this.query(connection, `DELETE FROM userRole WHERE userId=?`, [userID]);
       await this.query(connection, `DELETE FROM user WHERE id=?`, [userID]);
       await connection.commit();
     } catch {
@@ -106,7 +106,7 @@ class DB {
 
       let userRoles = [];
       if (users.length > 0) {
-        userRoles = await this.query(connection, `SELECT * FROM userrole WHERE userId IN (${users.map((u) => u.id).join(',')})`);
+        userRoles = await this.query(connection, `SELECT * FROM userRole WHERE userId IN (${users.map((u) => u.id).join(',')})`);
       }
 
       // Combine roles into users

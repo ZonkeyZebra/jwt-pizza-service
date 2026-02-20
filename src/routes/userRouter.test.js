@@ -59,3 +59,8 @@ test('delete user', async () => {
     const deleteRes = await request(app).delete(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`);
     expect(deleteRes.status).toBe(200);
 });
+
+test('delete user unauthorized', async () => {
+    const deleteRes = await request(app).delete(`/api/user/${testUserId}`);
+    expect(deleteRes.status).toBe(401);
+});

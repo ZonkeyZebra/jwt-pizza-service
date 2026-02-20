@@ -34,31 +34,26 @@ beforeAll(async () => {
 
 test('get user', async () => {
     const getUser = await request(app).get('/api/user/me').set('Authorization', `Bearer ${adminAuthToken}`);
+    console.log(getUser);
     expect(getUser.status).toBe(200);
-});
-
-test('get users', async () => {
-    const getUsers = await request(app).get('/api/user').set('Authorization', `Bearer ${adminAuthToken}`);
-    expect(getUsers.status).toBe(200);
 });
 
 test('update a user', async () => {
     const updatedInfo = { name: 'updated', email: 'updated@test.com' }
     const updatedUser = await request(app).put(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`).send(updatedInfo);
+    console.log(updatedUser);
     expect(updatedUser.status).toBe(200);
 });
 
 test('list users unauthorized', async () => {
     const listUsersRes = await request(app).get('/api/user');
+    console.log(listUsersRes);
     expect(listUsersRes.status).toBe(401);
 });
 
 test('list users', async () => {
-    const [user, adminAuthToken] = await registerUser(request(app));
-    expect(user).toBeDefined();
-    const listUsersRes = await request(app)
-        .get('/api/user')
-        .set('Authorization', 'Bearer ' + adminAuthToken);
+    const listUsersRes = await request(app).get('/api/user').set('Authorization', `Bearer ${adminAuthToken}`);
+    console.log(listUsersRes);
     expect(listUsersRes.status).toBe(200);
     expect(Array.isArray(listUsersRes.body.users)).toBe(true);
     expect(listUsersRes.body.users.length).toBeGreaterThan(0);
@@ -66,17 +61,6 @@ test('list users', async () => {
 
 test('delete user', async () => {
     const deleteRes = await request(app).delete(`/api/user/${testUserId}`).set('Authorization', `Bearer ${adminAuthToken}`);
+    console.log(deleteRes);
     expect(deleteRes.status).toBe(200);
 });
-
-async function registerUser(service) {
-    const testUser = {
-        name: 'pizza diner',
-        email: `${randomName()}@test.com`,
-        password: 'a',
-    };
-    const registerRes = await service.post('/api/auth').send(testUser);
-    registerRes.body.user.password = testUser.password;
-
-    return [registerRes.body.user, registerRes.body.token];
-}

@@ -47,23 +47,31 @@ function requestTracker(req, res, next) {
         activeUsers.add(req.user.id);
     }
 
-    // Capture original res.json to track latency
+    // Capture original res.json and res.send to track latency
     const originalJson = res.json;
-    res.json = function (data) {
-        const latency = Date.now() - startTime;
+    const originalSend = res.send;
 
+    const trackLatency = () => {
+        const latency = Date.now() - startTime;
         // Track endpoint latency
         if (!latencyMetrics.endpoints[endpoint]) {
             latencyMetrics.endpoints[endpoint] = [];
         }
         latencyMetrics.endpoints[endpoint].push(latency);
-
         // Keep only last 100 measurements per endpoint
         if (latencyMetrics.endpoints[endpoint].length > 100) {
             latencyMetrics.endpoints[endpoint].shift();
         }
+    };
 
+    res.json = function (data) {
+        trackLatency();
         return originalJson.call(this, data);
+    };
+
+    res.send = function (data) {
+        trackLatency();
+        return originalSend.call(this, data);
     };
 
     next();
@@ -72,6 +80,7 @@ function requestTracker(req, res, next) {
 // This will periodically send metrics to Grafana
 setInterval(() => {
     const metrics = [];
+    console.log('[METRICS] Preparing metrics batch. Total requests:', requests.total);
 
     // HTTP requests by method/minute
     metrics.push(createMetric('http_requests_total', requests.total, '1', 'sum', 'asInt'));
@@ -113,6 +122,7 @@ setInterval(() => {
         metrics.push(createMetric('pizza_creation_latency_avg_ms', avgPizzaLatency, 'ms', 'gauge', 'asDouble'));
     }
 
+    console.log('[METRICS] Sending', metrics.length, 'metrics to Grafana');
     sendMetricToGrafana(metrics);
 
     // Reset minute counters (optional, depending on Grafana setup)
@@ -155,31 +165,34 @@ function sendMetricToGrafana(metrics) {
     const body = {
         resourceMetrics: [
             {
+                resource: {
+                    attributes: [
+                        {
+                            key: "service.name",
+                            value: { stringValue: config.metrics.source }
+                        }
+                    ]
+                },
                 scopeMetrics: [
                     {
-                        metrics,
-                    },
-                ],
-            },
-        ],
+                        scope: {
+                            name: "custom-metrics"
+                        },
+                        metrics: metrics
+                    }
+                ]
+            }
+        ]
     };
 
-    fetch(`${config.metrics.endpointUrl}`, {
-        method: 'POST',
+    fetch(config.metrics.endpointUrl, {
+        method: "POST",
         body: JSON.stringify(body),
         headers: {
             Authorization: `Bearer ${config.metrics.apiKey}`,
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
         }
     })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP status: ${response.status}`);
-            }
-        })
-        .catch((error) => {
-            console.error('Error pushing metrics:', error);
-        });
 }
 
 // System metrics functions

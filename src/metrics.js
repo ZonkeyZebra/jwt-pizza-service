@@ -174,25 +174,18 @@ function sendMetricToGrafana(metrics) {
         ],
     };
 
-    const auth = Buffer.from(
-        `${config.metrics.accountId}:${config.metrics.apiKey}`
-    ).toString("base64");
-
-    fetch(config.metrics.endpointUrl, {
-        method: "POST",
+    fetch(`${config.metrics.endpointUrl}`, {
+        method: 'POST',
         body: JSON.stringify(body),
-        headers: {
-            "Content-Type": "application/json",
-
-            // SAME as curl -u accountId:apiKey
-            "Authorization": `Basic ${auth}`,
-        },
+        headers: { Authorization: `Bearer ${config.metrics.accountId}:${config.metrics.apiKey}`, 'Content-Type': 'application/json' },
     })
         .then((response) => {
-            console.log("[METRICS] status:", response.status);
+            if (!response.ok) {
+                throw new Error(`HTTP status: ${response.status}`);
+            }
         })
-        .catch((err) => {
-            console.error("[METRICS] error:", err);
+        .catch((error) => {
+            console.error('Error pushing metrics:', error);
         });
 }
 

@@ -51,4 +51,8 @@ app.use((err, req, res, next) => {
   next();
 });
 
+// Add endpoint request metrics code
+const metrics = require('./metrics');
+app.use(metrics.requestTracker);
+
 module.exports = app;

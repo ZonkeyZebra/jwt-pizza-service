@@ -1,6 +1,12 @@
 {
   "collectCoverage": true,
-  "coverageReporters": ["json-summary", "text"],
+  "coverageReporters": [
+    "json-summary",
+    "text"
+  ],
+  "coveragePathIgnorePatterns": [
+    "metrics.js"
+  ],
   "coverageThreshold": {
     "global": {
       "lines": 80

@@ -167,7 +167,7 @@ function sendMetricToGrafana(metrics) {
         method: 'POST',
         body: JSON.stringify(body),
         headers: {
-            Authorization: `Bearer ${config.metrics.accountId}:${config.metrics.apiKey}`,
+            Authorization: `Bearer ${config.metrics.apiKey}`,
             'Content-Type': 'application/json'
         }
     })

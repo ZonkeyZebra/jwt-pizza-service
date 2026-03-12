@@ -1,7 +1,6 @@
 const config = require('./config');
 const os = require('os');
 
-// I think I had my endpoint URL wrong, deploying again to see if this fixes the issue
 
 // Metrics stored in memory
 const requests = {

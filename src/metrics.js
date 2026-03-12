@@ -127,7 +127,7 @@ setInterval(() => {
 
     // Reset minute counters (optional, depending on Grafana setup)
     // requests.byMethod = { GET: 0, PUT: 0, POST: 0, DELETE: 0 };
-}, 60000);
+}, 10000);
 
 function createMetric(metricName, metricValue, metricUnit, metricType, valueType, attributes = {}) {
     attributes = { ...attributes, source: config.metrics.source };
@@ -165,34 +165,28 @@ function sendMetricToGrafana(metrics) {
     const body = {
         resourceMetrics: [
             {
-                resource: {
-                    attributes: [
-                        {
-                            key: "service.name",
-                            value: { stringValue: config.metrics.source }
-                        }
-                    ]
-                },
                 scopeMetrics: [
                     {
-                        scope: {
-                            name: "custom-metrics"
-                        },
-                        metrics: metrics
-                    }
-                ]
-            }
-        ]
+                        metrics,
+                    },
+                ],
+            },
+        ],
     };
 
-    fetch(config.metrics.endpointUrl, {
-        method: "POST",
+    fetch(`${config.endpointUrl}`, {
+        method: 'POST',
         body: JSON.stringify(body),
-        headers: {
-            Authorization: `Bearer ${config.metrics.apiKey}`,
-            "Content-Type": "application/json"
-        }
+        headers: { Authorization: `Bearer ${config.accountId}:${config.apiKey}`, 'Content-Type': 'application/json' },
     })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP status: ${response.status}`);
+            }
+        })
+        .catch((error) => {
+            console.error('Error pushing metrics:', error);
+        });
 }
 
 // System metrics functions

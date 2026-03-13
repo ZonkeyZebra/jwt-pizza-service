@@ -205,7 +205,6 @@ function sendMetricToGrafana(metrics) {
         .catch((error) => {
             console.error('Error pushing metrics:', error);
         });
-    console.log('Body sent: ', JSON.stringify(body));
 }
 
 // System metrics functions

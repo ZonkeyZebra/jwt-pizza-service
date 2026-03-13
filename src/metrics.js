@@ -165,8 +165,20 @@ function sendMetricToGrafana(metrics) {
     const body = {
         resourceMetrics: [
             {
+                resource: {
+                    attributes: [
+                        {
+                            key: 'service.name',
+                            value: { stringValue: config.metrics.source },
+                        },
+                    ],
+                },
                 scopeMetrics: [
                     {
+                        scope: {
+                            name: 'jwt-pizza-service',
+                            version: '1.0.0',
+                        },
                         metrics,
                     },
                 ],
@@ -193,7 +205,7 @@ function sendMetricToGrafana(metrics) {
         .catch((error) => {
             console.error('Error pushing metrics:', error);
         });
-    console.log('Body sent: ', JSON.stringify(body, null, 2))
+    console.log('Body sent: ', JSON.stringify(body));
 }
 
 // System metrics functions

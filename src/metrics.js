@@ -181,6 +181,9 @@ function sendMetricToGrafana(metrics) {
     })
         .then((response) => {
             if (!response.ok) {
+                console.error('Failed to push metrics to Grafana. Status:', response.status);
+                console.error('Response body:', response.text());
+                console.log('Endpoint URL:', config.metrics.endpointUrl);
                 throw new Error(`HTTP status: ${response.status}`);
             }
         })

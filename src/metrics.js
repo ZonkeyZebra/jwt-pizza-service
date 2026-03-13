@@ -34,9 +34,7 @@ function requestTracker(req, res, next) {
     // Track HTTP method
     const method = req.method;
     requests.total += 1;
-    if (requests.byMethod[method]) {
-        requests.byMethod[method] += 1;
-    }
+    requests.byMethod[method] = (requests.byMethod[method] || 0) + 1;
 
     // Track by endpoint
     const endpoint = `${req.method} ${req.path}`;
@@ -81,13 +79,14 @@ function requestTracker(req, res, next) {
 setInterval(() => {
     const metrics = [];
     console.log('[METRICS] Preparing metrics batch. Total requests:', requests.total);
+    console.log("byMethod:", requests.byMethod);
 
     // HTTP requests by method/minute
     metrics.push(createMetric('http_requests_total', requests.total, '1', 'sum', 'asInt'));
-    metrics.push(createMetric('http_requests', requests.byMethod.GET, '1', 'sum', 'asInt', { method: 'GET' }));
-    metrics.push(createMetric('http_requests', requests.byMethod.PUT, '1', 'sum', 'asInt', { method: 'PUT' }));
-    metrics.push(createMetric('http_requests', requests.byMethod.POST, '1', 'sum', 'asInt', { method: 'POST' }));
-    metrics.push(createMetric('http_requests', requests.byMethod.DELETE, '1', 'sum', 'asInt', { method: 'DELETE' }));
+    metrics.push(createMetric('http_requests_get', requests.byMethod.GET, '1', 'sum', 'asInt'));
+    metrics.push(createMetric('http_requests_put', requests.byMethod.PUT, '1', 'sum', 'asInt'));
+    metrics.push(createMetric('http_requests_post', requests.byMethod.POST, '1', 'sum', 'asInt'));
+    metrics.push(createMetric('http_requests_delete', requests.byMethod.DELETE, '1', 'sum', 'asInt'));
 
     // Active users
     metrics.push(createMetric('active_users', activeUsers.size, '1', 'gauge', 'asInt'));

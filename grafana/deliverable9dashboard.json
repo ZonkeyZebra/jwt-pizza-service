@@ -5,8 +5,8 @@
     "name": "blvkwg6",
     "namespace": "stacks-1549028",
     "uid": "dc49256d-0286-4094-8d41-a0312ee5b2cf",
-    "resourceVersion": "1773799837689517",
-    "generation": 54,
+    "resourceVersion": "1773800633653767",
+    "generation": 55,
     "creationTimestamp": "2026-03-05T23:05:26Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "3074975546949632"
@@ -16,7 +16,7 @@
       "grafana.app/folder": "",
       "grafana.app/saved-from-ui": "Grafana Cloud (steady)",
       "grafana.app/updatedBy": "user:cff56jcfrib5se",
-      "grafana.app/updatedTimestamp": "2026-03-18T02:10:37Z"
+      "grafana.app/updatedTimestamp": "2026-03-18T02:23:53Z"
     }
   },
   "spec": {
@@ -251,10 +251,10 @@
           }
         }
       },
-      "panel-11": {
+      "panel-12": {
         "kind": "Panel",
         "spec": {
-          "id": 11,
+          "id": 12,
           "title": "Logging",
           "description": "",
           "links": [],
@@ -305,21 +305,25 @@
                         "level": true,
                         "method": true,
                         "path": true,
+                        "query": true,
                         "reqBody": true,
                         "resBody": true,
                         "statusCode": true,
+                        "success": true,
                         "type": true
                       },
                       "indexByName": {
                         "Time": 0,
-                        "authorized": 8,
-                        "level": 1,
-                        "method": 2,
+                        "authorized": 2,
+                        "level": 3,
+                        "method": 4,
                         "path": 5,
-                        "reqBody": 6,
-                        "resBody": 7,
-                        "statusCode": 4,
-                        "type": 3
+                        "query": 6,
+                        "reqBody": 7,
+                        "resBody": 8,
+                        "statusCode": 9,
+                        "success": 10,
+                        "type": 1
                       }
                     }
                   }
@@ -338,7 +342,7 @@
                 "showHeader": true,
                 "sortBy": [
                   {
-                    "desc": true,
+                    "desc": false,
                     "displayName": "Time"
                   }
                 ]
@@ -1377,7 +1381,7 @@
               "height": 8,
               "element": {
                 "kind": "ElementReference",
-                "name": "panel-11"
+                "name": "panel-12"
               }
             }
           },

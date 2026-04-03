@@ -188,21 +188,23 @@ function sendMetricToGrafana(metrics) {
     fetch(`${config.metrics.endpointUrl}`, {
         method: 'POST',
         body: JSON.stringify(body),
-        headers: { Authorization: `Bearer ${config.metrics.accountId}:${config.metrics.apiKey}`, 'Content-Type': 'application/json' },
+        headers: {
+            Authorization: `Bearer ${config.metrics.accountId}:${config.metrics.apiKey}`,
+            'Content-Type': 'application/json',
+        },
     })
-        .then((response) => {
+        .then(async (response) => {
+            const text = await response.text();
+
             if (!response.ok) {
-                const body = response.text();
-                console.log("Response body:", body);
-                console.log('Endpoint URL:', config.metrics.endpointUrl);
-                console.log("accountId:", config.metrics.accountId);
-                console.log("apiKey:", config.metrics.apiKey);
-                console.log('Headers:', response.headers);
-                throw new Error(`HTTP status: ${response.status}`);
+                console.error('❌ Metrics push failed:', response.status);
+                console.error('Response body:', text);
+            } else {
+                console.log('✅ Metrics pushed. status:', response.status);
             }
         })
         .catch((error) => {
-            console.error('Error pushing metrics:', error);
+            console.error('❌ Network error:', error);
         });
 }
 
